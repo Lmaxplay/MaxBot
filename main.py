@@ -12,7 +12,7 @@ from nextcord.abc import Snowflake
 from nextcord.ext import commands
 import nextcord.abc
 
-from version import getnextcordversion, getpythonversion
+from version import *
 
 bot = commands.Bot(command_prefix=["$", "\$"])
 
@@ -31,11 +31,13 @@ async def thing(ctx: commands.context.Context):
 @bot.command(aliases=["version"])
 async def about(ctx: commands.context.Context):
     embed = nextcord.Embed(title = f"About {bot.user.name}", description = format ("""
-running on python {0}
-using nextcord {1}
+Running on {0}
+Python {1}
+Nextcord {2}
     """.format (
-        getpythonversion(),
-        getnextcordversion()
+        getOSVersion(),
+        getPythonVersion(),
+        getNextcordVersion()
     )),
     color = nextcord.Colour(0x0088FF)
     )
