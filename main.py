@@ -14,12 +14,13 @@ import nextcord.abc
 
 from version import *
 
-bot = commands.Bot(command_prefix=["$", "\$"])
+intents = nextcord.Intents.all()
+
+bot = commands.Bot(command_prefix=["$", "\$"], intents=intents)
 
 @bot.command(
     aliases=["getping"],
     help="Returns the ping"
-
 )
 async def ping(ctx: commands.context.Context):
     await ctx.send("Pong!\nLatency is " + str(math.floor(bot.latency * 1000) / 1000) + " seconds")
@@ -90,8 +91,6 @@ async def help(ctx: commands.context.Context, commandname: str = ""):
             )
             await ctx.send(embed=embed)
 
-
-
 @bot.event
 async def on_ready():
     print("Bot ready")
@@ -103,7 +102,7 @@ async def on_ready():
     presence.type = nextcord.ActivityType.watching
     presence.buttons = nextcord.types.activity.ActivityButton()
 
-    await bot.change_presence(status=nextcord.Status.dnd, activity=presence)
+    await bot.change_presence(status=nextcord.Status.online, activity=presence)
 
     await bot.get_guild(945283628018057287).get_channel(945283628018057290).send(
         f"Rebooted!"
@@ -111,7 +110,8 @@ async def on_ready():
 
 @bot.event
 async def on_typing(channel: nextcord.abc.Messageable, user: nextcord.User, when: datetime):
-    return #print("User " + user.name + " started typing")
+    #print("User " + user.name + " started typing")
+    return
 
 @bot.event
 async def on_message(message: nextcord.Message):
