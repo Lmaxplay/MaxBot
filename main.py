@@ -142,8 +142,8 @@ async def on_typing(channel: nextcord.abc.Messageable, user: nextcord.User, when
 async def on_message(message: nextcord.Message):
     if message.author.bot:
         return
+    #   await message.channel.send(message.content[::-1])
     await bot.process_commands(message)
-    await bot.get_guild(945283628018057287).get_member(858390466617540638).edit(nick=f"")
     return
 
 @bot.event
