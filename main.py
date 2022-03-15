@@ -91,6 +91,32 @@ async def help(ctx: commands.context.Context, commandname: str = ""):
             )
             await ctx.send(embed=embed)
 
+@bot.command(aliases=["codeformat"])
+async def format(ctx: commands.context.Context):
+    embed = nextcord.Embed(title = f"How to format code", description = """
+Use
+\\`\\`\\`<language>
+
+\\`\\`\\`
+this will result in
+```
+print("Hello world!")
+```
+add syntax highlighting by replacing <language> with for example, for python: python
+```python
+print("Hello world!")
+```
+this was achieved by typing
+\\`\\`\\`python
+print("Hello world!")
+\\`\\`\\`
+    """
+    ,
+    color = nextcord.Colour(0x0088FF)
+    )
+    
+    await ctx.send( embed=embed )
+
 @bot.event
 async def on_ready():
     print("Bot ready")
@@ -104,13 +130,12 @@ async def on_ready():
 
     await bot.change_presence(status=nextcord.Status.online, activity=presence)
 
-    await bot.get_guild(945283628018057287).get_channel(945283628018057290).send(
-        f"Rebooted!"
-    )
+    embed = nextcord.Embed(color=nextcord.Colour(0xFF0000), title="Started", description="```py\n" + str("Started up MaxBot") + "\n```")
+    #await bot.get_guild(945283628018057287).get_channel(945283628018057290).send(embed=embed)
 
 @bot.event
 async def on_typing(channel: nextcord.abc.Messageable, user: nextcord.User, when: datetime):
-    #print("User " + user.name + " started typing")
+    # print("User " + user.name + " started typing")
     return
 
 @bot.event
@@ -118,6 +143,7 @@ async def on_message(message: nextcord.Message):
     if message.author.bot:
         return
     await bot.process_commands(message)
+    await bot.get_guild(945283628018057287).get_member(858390466617540638).edit(nick=f"")
     return
 
 @bot.event
