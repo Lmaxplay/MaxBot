@@ -31,7 +31,11 @@ async def ping(ctx: commands.context.Context):
 async def thing(ctx: commands.context.Context):
     await ctx.send('sure')
 
-@bot.command(aliases=["version"])
+@bot.command(aliases=["version"], help="""
+Gets the bots about page
+Usage:
+ - `about`
+""" )
 async def about(ctx: commands.context.Context):
     embed = nextcord.Embed(title = f"About {bot.user.name}", description = """
 Running on {0}
@@ -49,7 +53,11 @@ Nextcord {2}
     
     await ctx.send( embed=embed )
 
-@bot.command(aliases=["codeformat"])
+@bot.command(aliases=["codeformat"], help="""
+Tells you how to format code
+Usage:
+ - `format`
+""" )
 async def format(ctx: commands.context.Context):
     embed = nextcord.Embed(title = f"How to format code", description = """
 Use
@@ -78,10 +86,13 @@ print("Hello world!")
 
 bot.remove_command("help") # Remove default help command
 
-@bot.command()
-async def help(ctx: commands.context.Context, commandname: str = "", help="""
-Gives help
-"""):
+@bot.command( help="""
+Gives help about commands,
+Usage:
+ - `help`
+ - `help <commandname>`
+""" )
+async def help(ctx: commands.context.Context, commandname: str = ""):
     if commandname == "":
         helpstr = ""
         for command in bot.commands:
@@ -113,8 +124,8 @@ Gives help
                 description = helpcommand.help,
                 color = nextcord.Colour(0x0088FF)
             )
-            if embed.description == "None":
-                embed.description = "This command has no help description"
+            #if embed.description == "None":
+            #    embed.description = "This command has no help description"
             await ctx.send(embed=embed)
         else:
             embed = nextcord.Embed(
