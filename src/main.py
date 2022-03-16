@@ -18,7 +18,7 @@ from exception import AuthenticationException
 
 intents = nextcord.Intents.all()
 
-bot = commands.Bot(command_prefix=["$", "\$"], intents=intents, owner_id=941433256010727484)
+bot = commands.Bot(command_prefix=["$", "\$"], intents=intents, owner_ids=[941433256010727484, 858390466617540638])
 
 @bot.command(
     aliases=["getping"],
@@ -80,7 +80,7 @@ bot.remove_command("help") # Remove default help command
 
 @bot.command()
 async def help(ctx: commands.context.Context, commandname: str = "", help="""
-
+Gives help
 """):
     if commandname == "":
         helpstr = ""
