@@ -11,12 +11,14 @@ import nextcord.ext.commands
 from nextcord.abc import Snowflake
 from nextcord.ext import commands
 import nextcord.abc
+import pathlib
 
 from version import *
+from exception import AuthenticationException
 
 intents = nextcord.Intents.all()
 
-bot = commands.Bot(command_prefix=["$", "\$"], intents=intents)
+bot = commands.Bot(command_prefix=["$", "\$"], intents=intents, owner_id=941433256010727484)
 
 @bot.command(
     aliases=["getping"],
@@ -31,7 +33,7 @@ async def thing(ctx: commands.context.Context):
 
 @bot.command(aliases=["version"])
 async def about(ctx: commands.context.Context):
-    embed = nextcord.Embed(title = f"About {bot.user.name}", description = format ("""
+    embed = nextcord.Embed(title = f"About {bot.user.name}", description = """
 Running on {0}
 Python {1}
 Nextcord {2}
@@ -39,7 +41,7 @@ Nextcord {2}
         getOSVersion(),
         getPythonVersion(),
         getNextcordVersion()
-    )),
+    ),
     color = nextcord.Colour(0x0088FF)
     )
     
@@ -47,10 +49,39 @@ Nextcord {2}
     
     await ctx.send( embed=embed )
 
+@bot.command(aliases=["codeformat"])
+async def format(ctx: commands.context.Context):
+    embed = nextcord.Embed(title = f"How to format code", description = """
+Use
+\\`\\`\\`<language>
+
+\\`\\`\\`
+this will result in
+```
+print("Hello world!")
+```
+add syntax highlighting by replacing <language> with for example, for python:
+`python`
+```python
+print("Hello world!")
+```
+this was achieved by typing
+\\`\\`\\`python
+print("Hello world!")
+\\`\\`\\`
+    """
+    ,
+    color = nextcord.Colour(0x0088FF)
+    )
+    
+    await ctx.send( embed=embed )
+
 bot.remove_command("help") # Remove default help command
 
 @bot.command()
-async def help(ctx: commands.context.Context, commandname: str = ""):
+async def help(ctx: commands.context.Context, commandname: str = "", help="""
+
+"""):
     if commandname == "":
         helpstr = ""
         for command in bot.commands:
@@ -82,6 +113,8 @@ async def help(ctx: commands.context.Context, commandname: str = ""):
                 description = helpcommand.help,
                 color = nextcord.Colour(0x0088FF)
             )
+            if embed.description == "None":
+                embed.description = "This command has no help description"
             await ctx.send(embed=embed)
         else:
             embed = nextcord.Embed(
@@ -90,32 +123,6 @@ async def help(ctx: commands.context.Context, commandname: str = ""):
                 color = nextcord.Colour(0x0088FF)
             )
             await ctx.send(embed=embed)
-
-@bot.command(aliases=["codeformat"])
-async def format(ctx: commands.context.Context):
-    embed = nextcord.Embed(title = f"How to format code", description = """
-Use
-\\`\\`\\`<language>
-
-\\`\\`\\`
-this will result in
-```
-print("Hello world!")
-```
-add syntax highlighting by replacing <language> with for example, for python: python
-```python
-print("Hello world!")
-```
-this was achieved by typing
-\\`\\`\\`python
-print("Hello world!")
-\\`\\`\\`
-    """
-    ,
-    color = nextcord.Colour(0x0088FF)
-    )
-    
-    await ctx.send( embed=embed )
 
 @bot.event
 async def on_ready():
@@ -143,6 +150,8 @@ async def on_message(message: nextcord.Message):
     if message.author.bot:
         return
     #   await message.channel.send(message.content[::-1])
+    if message.author == bot.user:
+        return
     await bot.process_commands(message)
     return
 
@@ -152,9 +161,17 @@ async def on_command_error(ctx: commands.Context, error: commands.CommandError):
         embed = nextcord.Embed(color=nextcord.Colour(0xFF0000), title="Command not found") #,  description=f"Command  not found")
         await ctx.send(embed=embed)
         return
+    if isinstance(error, commands.errors.CommandInvokeError):
+        if (isinstance(error.original, AuthenticationException)):
+            embed = nextcord.Embed(color=nextcord.Colour(0xFF0000), title="Permission denied", description="You aren't allowed to do this") #,  description=f"Command  not found")
+            await ctx.send(embed=embed)
+            return
+        else:
+            embed = nextcord.Embed(color=nextcord.Colour(0xFF0000), title="An error occured", description="```py\n" + str(error) + "\n```")
+            await ctx.send(embed=embed)
+            return
     embed = nextcord.Embed(color=nextcord.Colour(0xFF0000), title="An error occured", description="```py\n" + str(error) + "\n```")
     await ctx.send(embed=embed)
     await ctx.message.add_reaction("⚠️")
 
-
-bot.run(dotenv.get_key(".env", "TOKEN"))
+bot.run(dotenv.get_key(pathlib.Path(__file__).parent.joinpath("./.env"), "TOKEN"))
