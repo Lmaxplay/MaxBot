@@ -4,6 +4,8 @@ import os
 import platform
 
 def getOSVersion():
+    if platform.version() >= "10.0.22000" and platform.release() == "10" and platform.system() == "Windows":
+        return f"Windows 11 (build {platform.version()}) {platform.architecture()[0]}"
     return f"{platform.system()} {platform.release()} (build {platform.version()}) {platform.architecture()[0]}"
 
 def getNextcordVersion():
